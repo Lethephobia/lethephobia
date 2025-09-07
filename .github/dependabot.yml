@@ -45,12 +45,13 @@ updates:
     rebase-strategy: "auto"
 
   - package-ecosystem: "docker"
-    directores:
+    directories:
       - "/dockerfiles/**"
     schedule:
       interval: "weekly"
       day: "monday"
       time: "10:45"
+      timezone: "Asia/Tokyo"
     commit-message:
       prefix: "deps"
     open-pull-requests-limit: 10
