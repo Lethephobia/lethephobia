@@ -1,0 +1,70 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/apps/lethephobia_blog"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "deps"
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "cargo"
+    directory: "/apps/lethephobia_server"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:15"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "deps"
+    open-pull-requests-limit: 10
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "pub"
+    directory: "/apps/lethephobia_cms"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:30"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "deps"
+    open-pull-requests-limit: 10
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "docker"
+    directory: "/dockerfiles/**"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:45"
+    commit-message:
+      prefix: "deps"
+    open-pull-requests-limit: 10
+    target-branch: "develop"
+    rebase-strategy: "auto"
+
+  - package-ecosystem: "docker-compose"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "11:00"
+      timezone: "Asia/Tokyo"
+    commit-message:
+      prefix: "deps"
+    open-pull-requests-limit: 10
+    target-branch: "develop"
+    rebase-strategy: "auto"
