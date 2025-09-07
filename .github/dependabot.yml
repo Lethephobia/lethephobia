@@ -45,7 +45,8 @@ updates:
     rebase-strategy: "auto"
 
   - package-ecosystem: "docker"
-    directory: "/dockerfiles/**"
+    directores:
+      - "/dockerfiles/**"
     schedule:
       interval: "weekly"
       day: "monday"
