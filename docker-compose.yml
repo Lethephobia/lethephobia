@@ -1,0 +1,15 @@
+services:
+  internal_api:
+    build:
+      context: .
+      dockerfile: dockerfiles/internal_api/Dockerfile
+      target: dev
+    ports:
+      - 8911:8080
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+    volumes:
+      - ./apps/lethephobia_server:/app
+    env_file:
+      - .env
