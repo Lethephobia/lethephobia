@@ -1,11 +1,13 @@
 [workspace]
-
 resolver = "3"
-edition = "2024"
 
 members = [
     "crates/application",
     "crates/domain",
     "crates/infrastructure",
-    "crates/shared", "servers/api", "servers/batch", "servers/internal_api", "servers/projector",
+    "crates/shared",
+    "servers/api",
+    "servers/batch",
+    "servers/internal_api",
+    "servers/projector",
 ]
