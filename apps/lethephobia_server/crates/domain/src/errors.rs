@@ -1,5 +1,5 @@
-pub mod domain_error;
+pub mod aggregate_error;
 pub mod shared;
 
-pub use domain_error::DomainError;
+pub use aggregate_error::AggregateError;
 pub use shared::aggregate_version_error::AggregateVersionError;

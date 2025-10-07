@@ -1,16 +1,11 @@
 use crate::entities::Entity;
-use crate::errors::DomainError;
+use crate::errors::AggregateError;
 use crate::events::Event;
-use crate::value_objects::{AggregateId, AggregateVersion};
+use crate::value_objects::AggregateVersion;
 
-pub trait Aggregate: Entity
-where
-    Self::Id: AggregateId,
-{
+pub trait Aggregate: Entity {
     type Event: Event;
-    type Error: DomainError;
-
-    fn id(&self) -> Self::Id;
+    type Error: AggregateError;
 
     fn version(&self) -> AggregateVersion;
     fn set_version(&mut self, version: AggregateVersion);
@@ -21,8 +16,10 @@ where
 
     fn handle_event(&mut self, event: &Self::Event) -> Result<(), Self::Error>;
 
-    fn bump_version(&mut self) {
-        self.set_version(self.version().next());
+    fn bump_version(&mut self) -> Result<(), Self::Error> {
+        let next_version = self.version().try_next()?;
+        self.set_version(next_version);
+        Ok(())
     }
 
     fn take_uncommitted_events(&mut self) -> Vec<Self::Event> {
@@ -33,13 +30,13 @@ where
     fn apply_event(&mut self, event: Self::Event) -> Result<(), Self::Error> {
         self.handle_event(&event)?;
         self.record_uncommitted_event(event);
-        self.bump_version();
+        self.bump_version()?;
         Ok(())
     }
 
     fn load_event(&mut self, event: Self::Event) -> Result<(), Self::Error> {
         self.handle_event(&event)?;
-        self.bump_version();
+        self.bump_version()?;
         Ok(())
     }
 }
