@@ -1,0 +1,73 @@
+use std::{fmt, fmt::Display};
+
+use uuid::Uuid;
+
+use super::super::ValueObject;
+
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
+pub struct SnapshotId(Uuid);
+
+impl SnapshotId {
+    pub fn new() -> Self {
+        Self(Uuid::new_v4())
+    }
+
+    pub fn value(self) -> Uuid {
+        self.0
+    }
+}
+
+impl ValueObject for SnapshotId {}
+
+impl From<Uuid> for SnapshotId {
+    fn from(value: Uuid) -> Self {
+        Self(value)
+    }
+}
+
+impl From<SnapshotId> for Uuid {
+    fn from(value: SnapshotId) -> Self {
+        value.0
+    }
+}
+
+impl Display for SnapshotId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "{}", self.value())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn new_produces_non_nil_uuid() {
+        let snapshot_id = SnapshotId::new();
+        assert_ne!(snapshot_id.value(), Uuid::nil());
+    }
+
+    #[test]
+    fn value_returns_inner_uuid() {
+        let uuid = Uuid::from_u128(0x12345678123456781234567812345678);
+        let snapshot_id = SnapshotId::from(uuid);
+        assert_eq!(snapshot_id.value(), uuid);
+    }
+
+    #[test]
+    fn conversions_are_consistent() {
+        let uuid = Uuid::from_u128(0x87654321876543218765432187654321);
+        let snapshot_id: SnapshotId = uuid.into();
+        let back_into_uuid: Uuid = snapshot_id.into();
+
+        assert_eq!(back_into_uuid, uuid);
+    }
+
+    #[test]
+    fn display_uses_uuid_string() {
+        let uuid = Uuid::from_u128(0xabcdefabcdefabcdefabcdefabcdefab);
+        let snapshot_id = SnapshotId::from(uuid);
+
+        assert_eq!(snapshot_id.to_string(), uuid.to_string());
+    }
+}
