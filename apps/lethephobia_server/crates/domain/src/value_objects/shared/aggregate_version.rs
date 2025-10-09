@@ -21,13 +21,13 @@ impl AggregateVersion {
     }
 
     pub fn checked_next(self) -> Option<Self> {
-        self.value().checked_add(1).map(|v| Self(v))
+        self.value().checked_add(1).map(Self)
     }
 
     pub fn try_next(self) -> Result<Self, AggregateVersionError> {
         self.value()
             .checked_add(1)
-            .map(|v| Self(v))
+            .map(Self)
             .ok_or(AggregateVersionError::Overflow)
     }
 }
