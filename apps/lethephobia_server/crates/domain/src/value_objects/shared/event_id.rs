@@ -2,71 +2,107 @@ use std::{fmt, fmt::Display};
 
 use uuid::Uuid;
 
-use super::super::ValueObject;
+use crate::errors::EventIdError;
+use crate::value_objects::ValueObject;
+use crate::value_objects::shared::id::Id;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
-pub struct EventId(Uuid);
+pub struct EventId(Id);
 
 impl EventId {
     pub fn new() -> Self {
-        Self(Uuid::new_v4())
+        Self(Id::new())
     }
 
-    pub fn value(self) -> Uuid {
+    pub fn value(self) -> Id {
         self.0
+    }
+}
+
+impl Default for EventId {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
 impl ValueObject for EventId {}
 
-impl From<Uuid> for EventId {
-    fn from(value: Uuid) -> Self {
-        Self(value)
+impl TryFrom<Uuid> for EventId {
+    type Error = EventIdError;
+
+    fn try_from(value: Uuid) -> Result<Self, Self::Error> {
+        Ok(Self(Id::try_from(value)?))
     }
 }
 
 impl From<EventId> for Uuid {
     fn from(value: EventId) -> Self {
-        value.value()
+        value.0.value()
+    }
+}
+
+impl From<Id> for EventId {
+    fn from(value: Id) -> Self {
+        Self(value)
     }
 }
 
 impl Display for EventId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.value())
+        write!(f, "{}", self.0)
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::errors::IdError;
+    use uuid::{Uuid, Version};
 
     #[test]
-    fn new_produces_non_nil_uuid() {
-        let event_id = EventId::new();
-        assert_ne!(event_id.value(), Uuid::nil());
+    fn new_generates_uuid_v7() {
+        let uuid: Uuid = EventId::new().into();
+
+        assert_eq!(uuid.get_version(), Some(Version::SortRand));
     }
 
     #[test]
-    fn value_returns_inner_uuid() {
-        let uuid = Uuid::from_u128(0x12345678123456781234567812345678);
-        let event_id = EventId::from(uuid);
-        assert_eq!(event_id.value(), uuid);
+    fn default_generates_uuid_v7() {
+        let uuid: Uuid = EventId::default().into();
+
+        assert_eq!(uuid.get_version(), Some(Version::SortRand));
     }
 
     #[test]
-    fn conversions_are_consistent() {
-        let uuid = Uuid::from_u128(0x87654321876543218765432187654321);
-        let event_id: EventId = uuid.into();
-        let back_into_uuid: Uuid = event_id.into();
+    fn try_from_accepts_uuid_v7() {
+        let uuid = Uuid::now_v7();
+        let event_id = EventId::try_from(uuid).expect("uuidv7 should be accepted");
 
-        assert_eq!(back_into_uuid, uuid);
+        assert_eq!(Uuid::from(event_id), uuid);
     }
 
     #[test]
-    fn display_uses_uuid_string() {
-        let uuid = Uuid::from_u128(0xabcdefabcdefabcdefabcdefabcdefab);
-        let event_id = EventId::from(uuid);
+    fn try_from_rejects_non_uuid_v7() {
+        let uuid = Uuid::nil();
+
+        match EventId::try_from(uuid) {
+            Err(EventIdError::Id(IdError::NotUuidV7(returned))) => assert_eq!(returned, uuid),
+            other => panic!("expected NotUuidV7 error via EventIdError::Id, got {other:?}"),
+        }
+    }
+
+    #[test]
+    fn from_id_preserves_value() {
+        let id = Id::new();
+        let event_id = EventId::from(id);
+
+        assert_eq!(event_id.value(), id);
+    }
+
+    #[test]
+    fn display_formats_underlying_uuid() {
+        let uuid = Uuid::now_v7();
+        let event_id = EventId::try_from(uuid).expect("uuidv7 should be accepted");
 
         assert_eq!(event_id.to_string(), uuid.to_string());
     }

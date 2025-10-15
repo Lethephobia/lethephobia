@@ -17,6 +17,12 @@ impl CreatedAt {
     }
 }
 
+impl Default for CreatedAt {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ValueObject for CreatedAt {}
 
 impl From<DateTime<Utc>> for CreatedAt {
@@ -49,8 +55,14 @@ mod tests {
         let after = Utc::now();
 
         let created_at = created.value();
-        assert!(created_at >= before, "expected {created_at} to be after {before}");
-        assert!(created_at <= after, "expected {created_at} to be before {after}");
+        assert!(
+            created_at >= before,
+            "expected {created_at} to be after {before}"
+        );
+        assert!(
+            created_at <= after,
+            "expected {created_at} to be before {after}"
+        );
     }
 
     #[test]

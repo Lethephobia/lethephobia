@@ -29,8 +29,7 @@ pub trait Aggregate {
     }
 
     fn take_uncommitted_events(&mut self) -> Vec<Self::Event> {
-        let events = self.uncommitted_events_mut().drain(..).collect();
-        events
+        self.uncommitted_events_mut().drain(..).collect()
     }
 
     fn validate_next_event(&self, event: &Self::Event) -> Result<(), Self::Error> {

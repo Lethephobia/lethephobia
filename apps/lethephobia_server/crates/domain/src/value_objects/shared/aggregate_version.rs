@@ -32,6 +32,12 @@ impl AggregateVersion {
     }
 }
 
+impl Default for AggregateVersion {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl ValueObject for AggregateVersion {}
 
 impl TryFrom<i64> for AggregateVersion {
