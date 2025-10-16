@@ -1,0 +1,5 @@
+{
+    "rust-analyzer.linkedProjects": [
+        "apps/lethephobia_server/Cargo.toml",
+    ]
+}
