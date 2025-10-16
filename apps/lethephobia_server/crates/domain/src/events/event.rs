@@ -1,16 +1,45 @@
+use std::fmt::Debug;
+
+use crate::event_payloads::EventPayload;
 use crate::value_objects::{AggregateId, AggregateVersion, CreatedAt, EventId};
 
-pub trait Event: Send + Sync + 'static {
-    type AggregateId: AggregateId;
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub struct Event<A: AggregateId, P: EventPayload> {
+    id: EventId,
+    aggregate_id: A,
+    aggregate_version: AggregateVersion,
+    payload: P,
+    created_at: CreatedAt,
+}
 
-    const AGGREGATE_TYPE: &'static str;
-    const EVENT_TYPE: &'static str;
+impl<A: AggregateId, P: EventPayload> Event<A, P> {
+    pub fn new(aggregate_id: A, aggregate_version: AggregateVersion, payload: P) -> Self {
+        Self {
+            id: EventId::new(),
+            aggregate_id,
+            aggregate_version,
+            payload,
+            created_at: CreatedAt::now(),
+        }
+    }
 
-    fn id(&self) -> EventId;
+    pub fn id(&self) -> EventId {
+        self.id
+    }
 
-    fn aggregate_id(&self) -> Self::AggregateId;
+    pub fn aggregate_id(&self) -> A {
+        self.aggregate_id
+    }
 
-    fn aggregate_version(&self) -> AggregateVersion;
+    pub fn aggregate_version(&self) -> AggregateVersion {
+        self.aggregate_version
+    }
 
-    fn created_at(&self) -> CreatedAt;
+    pub fn payload(&self) -> &P {
+        &self.payload
+    }
+
+    pub fn created_at(&self) -> CreatedAt {
+        self.created_at
+    }
 }

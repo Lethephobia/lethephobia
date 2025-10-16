@@ -1,13 +1,16 @@
+use std::fmt::Debug;
+
 use crate::aggregate_states::AggregateState;
 use crate::errors::AggregateError;
+use crate::event_payloads::EventPayload;
 use crate::events::Event;
 use crate::snapshots::Snapshot;
-use crate::value_objects::AggregateVersion;
+use crate::value_objects::{AggregateId, AggregateVersion};
 
-pub trait Aggregate {
-    type Event: Event;
-    type State: AggregateState;
-    type Snapshot: Snapshot<State = Self::State>;
+pub trait Aggregate: Clone + Debug + Eq + Send + Sync + 'static {
+    type Id: AggregateId;
+    type State: AggregateState<Id = Self::Id>;
+    type EventPayload: EventPayload;
     type Error: From<AggregateError>;
 
     fn state(&self) -> &Option<Self::State>;
@@ -16,11 +19,11 @@ pub trait Aggregate {
     fn version(&self) -> AggregateVersion;
     fn set_version(&mut self, version: AggregateVersion);
 
-    fn uncommitted_events(&self) -> &[Self::Event];
-    fn uncommitted_events_mut(&mut self) -> &mut Vec<Self::Event>;
-    fn record_uncommitted_event(&mut self, event: Self::Event);
+    fn uncommitted_events(&self) -> &[Event<Self::Id, Self::EventPayload>];
+    fn uncommitted_events_mut(&mut self) -> &mut Vec<Event<Self::Id, Self::EventPayload>>;
+    fn record_uncommitted_event(&mut self, event: Event<Self::Id, Self::EventPayload>);
 
-    fn handle_event(&mut self, event: &Self::Event) -> Result<(), Self::Error>;
+    fn apply(&mut self, payload: &Self::EventPayload) -> Result<(), Self::Error>;
 
     fn bump_version(&mut self) -> Result<(), Self::Error> {
         let next_version = self.version().try_next().map_err(AggregateError::Version)?;
@@ -28,37 +31,51 @@ pub trait Aggregate {
         Ok(())
     }
 
-    fn take_uncommitted_events(&mut self) -> Vec<Self::Event> {
+    fn drain_uncommitted_events(&mut self) -> Vec<Event<Self::Id, Self::EventPayload>> {
         self.uncommitted_events_mut().drain(..).collect()
     }
 
-    fn validate_next_event(&self, event: &Self::Event) -> Result<(), Self::Error> {
+    fn append_event(&mut self, payload: Self::EventPayload) -> Result<(), Self::Error> {
+        self.apply(&payload)?;
+        self.bump_version()?;
+        let aggregate_id = self
+            .state()
+            .as_ref()
+            .map(|state| state.id())
+            .ok_or(AggregateError::NoState)?;
+        self.record_uncommitted_event(Event::new(aggregate_id, self.version(), payload));
+        Ok(())
+    }
+
+    fn validate_next_event(
+        &self,
+        event: &Event<Self::Id, Self::EventPayload>,
+    ) -> Result<(), Self::Error> {
         let next_version = self.version().try_next().map_err(AggregateError::Version)?;
         if event.aggregate_version() != next_version {
             return Err(AggregateError::InvalidNextEventVersion(
                 event.aggregate_version(),
                 next_version,
-            ))?;
+            )
+            .into());
         }
         Ok(())
     }
 
-    fn apply_event(&mut self, event: Self::Event) -> Result<(), Self::Error> {
+    fn replay_event(
+        &mut self,
+        event: Event<Self::Id, Self::EventPayload>,
+    ) -> Result<(), Self::Error> {
         self.validate_next_event(&event)?;
-        self.handle_event(&event)?;
-        self.record_uncommitted_event(event);
+        self.apply(event.payload())?;
         self.bump_version()?;
         Ok(())
     }
 
-    fn load_event(&mut self, event: Self::Event) -> Result<(), Self::Error> {
-        self.validate_next_event(&event)?;
-        self.handle_event(&event)?;
-        self.bump_version()?;
-        Ok(())
-    }
-
-    fn load_snapshot(&mut self, snapshot: Self::Snapshot) -> Result<(), Self::Error> {
+    fn restore_snapshot(
+        &mut self,
+        snapshot: Snapshot<Self::Id, Self::State>,
+    ) -> Result<(), Self::Error> {
         let version = snapshot.aggregate_version();
         let state = snapshot.into_state();
         self.state_mut().replace(state);
@@ -66,17 +83,24 @@ pub trait Aggregate {
         Ok(())
     }
 
-    fn load_events(
+    fn replay_events<I: IntoIterator<Item = Event<Self::Id, Self::EventPayload>>>(
         &mut self,
-        events: Vec<Self::Event>,
-        snapshot: Option<Self::Snapshot>,
+        events: I,
+        snapshot: Option<Snapshot<Self::Id, Self::State>>,
     ) -> Result<(), Self::Error> {
         if let Some(snapshot) = snapshot {
-            self.load_snapshot(snapshot)?;
+            self.restore_snapshot(snapshot)?;
         }
         for event in events {
-            self.load_event(event)?;
+            self.replay_event(event)?;
         }
         Ok(())
+    }
+
+    fn to_snapshot(&self) -> Result<Snapshot<Self::Id, Self::State>, Self::Error> {
+        self.state()
+            .as_ref()
+            .map(|state| Snapshot::new(state.id(), self.version(), state.clone()))
+            .ok_or(AggregateError::NoState.into())
     }
 }

@@ -10,4 +10,7 @@ pub enum AggregateError {
 
     #[error("invalid next event version: {0}, expected {1}")]
     InvalidNextEventVersion(AggregateVersion, AggregateVersion),
+
+    #[error("no state")]
+    NoState,
 }

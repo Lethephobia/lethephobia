@@ -8,7 +8,7 @@ use super::super::ValueObject;
 pub struct CreatedAt(DateTime<Utc>);
 
 impl CreatedAt {
-    pub fn new() -> Self {
+    pub fn now() -> Self {
         Self(Utc::now())
     }
 
@@ -19,7 +19,7 @@ impl CreatedAt {
 
 impl Default for CreatedAt {
     fn default() -> Self {
-        Self::new()
+        Self::now()
     }
 }
 
@@ -51,7 +51,7 @@ mod tests {
     #[test]
     fn new_produces_timestamp_close_to_now() {
         let before = Utc::now();
-        let created = CreatedAt::new();
+        let created = CreatedAt::now();
         let after = Utc::now();
 
         let created_at = created.value();

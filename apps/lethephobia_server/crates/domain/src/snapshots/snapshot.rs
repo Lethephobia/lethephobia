@@ -1,21 +1,47 @@
 use crate::aggregate_states::AggregateState;
 use crate::value_objects::{AggregateId, AggregateVersion, CreatedAt, SnapshotId};
 
-pub trait Snapshot: Send + Sync + 'static {
-    type AggregateId: AggregateId;
-    type State: AggregateState;
+#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+pub struct Snapshot<A: AggregateId, S: AggregateState<Id = A>> {
+    id: SnapshotId,
+    aggregate_id: A,
+    aggregate_version: AggregateVersion,
+    state: S,
+    created_at: CreatedAt,
+}
 
-    const AGGREGATE_TYPE: &'static str;
+impl<A: AggregateId, S: AggregateState<Id = A>> Snapshot<A, S> {
+    pub fn new(aggregate_id: A, aggregate_version: AggregateVersion, state: S) -> Self {
+        Self {
+            id: SnapshotId::new(),
+            aggregate_id,
+            aggregate_version,
+            state,
+            created_at: CreatedAt::now(),
+        }
+    }
 
-    fn id(&self) -> SnapshotId;
+    pub fn id(&self) -> SnapshotId {
+        self.id
+    }
 
-    fn aggregate_version(&self) -> AggregateVersion;
+    pub fn aggregate_version(&self) -> AggregateVersion {
+        self.aggregate_version
+    }
 
-    fn aggregate_id(&self) -> &Self::AggregateId;
+    pub fn aggregate_id(&self) -> A {
+        self.aggregate_id
+    }
 
-    fn state(&self) -> &Self::State;
+    pub fn state(&self) -> &S {
+        &self.state
+    }
 
-    fn into_state(self) -> Self::State;
+    pub fn into_state(self) -> S {
+        self.state
+    }
 
-    fn created_at(&self) -> CreatedAt;
+    pub fn created_at(&self) -> CreatedAt {
+        self.created_at
+    }
 }
