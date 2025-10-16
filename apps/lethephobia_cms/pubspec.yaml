@@ -33,7 +33,7 @@ dev_dependencies:
   custom_lint: any
   json_serializable: ^6.11.1
   riverpod_generator: ^3.0.0-dev.17
-  riverpod_lint: ^3.0.0-dev.17
+  riverpod_lint: ^3.0.3
 
 flutter:
   uses-material-design: true
