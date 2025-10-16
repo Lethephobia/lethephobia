@@ -1,0 +1,47 @@
+services:
+  internal_api:
+    build:
+      context: .
+      dockerfile: dockerfiles/internal_api/Dockerfile
+      target: dev
+    ports:
+      - 7878:8080
+    environment:
+      - RUST_LOG=info
+      - RUST_BACKTRACE=1
+    volumes:
+      - ./apps/lethephobia_server:/app
+    env_file:
+      - .env
+
+  postgresql:
+    build:
+      context: .
+      dockerfile: dockerfiles/postgresql/Dockerfile
+    ports:
+      - 54921:5432
+    volumes:
+      - postgresql_data:/var/lib/postgresql/data
+      - ./dockerfiles/postgresql/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_USER=ltpb_user
+      - POSTGRES_PASSWORD=p4ssw0rd
+      - POSTGRES_DB=ltpb_db
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ltpb_user -d ltpb_db"]
+      interval: 1s
+      timeout: 5s
+      retries: 5
+
+  terraform:
+    build:
+      context: .
+      dockerfile: dockerfiles/terraform/Dockerfile
+    volumes:
+      - ./iac:/workspace
+    working_dir: /workspace
+    tty: true
+
+volumes:
+  postgresql_data:

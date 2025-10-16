@@ -4,8 +4,6 @@ updates:
     directory: "/apps/lethephobia_blog"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "10:00"
       timezone: "Asia/Tokyo"
     commit-message:
       prefix: "deps"
@@ -22,8 +20,6 @@ updates:
     directory: "/apps/lethephobia_server"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "10:15"
       timezone: "Asia/Tokyo"
     commit-message:
       prefix: "deps"
@@ -35,8 +31,6 @@ updates:
     directory: "/apps/lethephobia_cms"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "10:30"
       timezone: "Asia/Tokyo"
     commit-message:
       prefix: "deps"
@@ -49,8 +43,6 @@ updates:
       - "/dockerfiles/**"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "10:45"
       timezone: "Asia/Tokyo"
     commit-message:
       prefix: "deps"
@@ -62,8 +54,6 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-      day: "monday"
-      time: "11:00"
       timezone: "Asia/Tokyo"
     commit-message:
       prefix: "deps"
