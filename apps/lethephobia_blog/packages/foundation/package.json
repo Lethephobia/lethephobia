@@ -1,0 +1,27 @@
+{
+  "name": "foundation",
+  "type": "module",
+  "packageManager": "pnpm@10.15.1",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "./dist/index.cjs",
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "dev": "tsup src/index.ts --dts --format cjs,esm --watch",
+    "lint": "biome check",
+    "format": "biome format --write"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.22",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3",
+    "@biomejs/biome": "2.2.0"
+  }
+}

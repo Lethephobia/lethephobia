@@ -1,4 +1,4 @@
-FROM postgres:16
+FROM postgres:18
 
 RUN apt update
 RUN apt install -y postgresql-server-dev-16 make gcc wget libicu-dev
