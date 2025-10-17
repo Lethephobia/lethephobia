@@ -4,8 +4,8 @@ resolver = "3"
 members = [
     "crates/application",
     "crates/domain",
+    "crates/foundation",
     "crates/infrastructure",
-    "crates/shared",
     "servers/api",
     "servers/batch",
     "servers/internal_api",
