@@ -7,7 +7,7 @@ edition = "2024"
 application = { path = "../../crates/application" }
 domain = { path = "../../crates/domain" }
 infrastructure = { path = "../../crates/infrastructure" }
-shared = { path = "../../crates/shared" }
+foundation = { path = "../../crates/foundation" }
 
 axum = "0.8.6"
 tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
