@@ -1,6 +1,6 @@
 use std::fmt::Debug;
 
-use crate::event_payloads::EventPayload;
+use crate::events::EventPayload;
 use crate::value_objects::{AggregateId, AggregateType, AggregateVersion, CreatedAt, EventId};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]

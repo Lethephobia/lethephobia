@@ -1,4 +1,4 @@
-use crate::aggregate_states::AggregateState;
+use crate::aggregates::AggregateState;
 use crate::value_objects::{AggregateId, AggregateType, AggregateVersion, CreatedAt, SnapshotId};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]

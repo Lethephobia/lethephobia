@@ -1,9 +1,8 @@
 use std::fmt::Debug;
 
-use crate::aggregate_states::AggregateState;
+use crate::aggregates::AggregateState;
 use crate::errors::AggregateError;
-use crate::event_payloads::EventPayload;
-use crate::events::Event;
+use crate::events::{Event, EventPayload};
 use crate::snapshots::Snapshot;
 use crate::value_objects::{AggregateId, AggregateType, AggregateVersion};
 
