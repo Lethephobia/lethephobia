@@ -1,12 +1,11 @@
 use std::fmt::Debug;
 
-use crate::event_payloads::EventPayload;
-use crate::value_objects::{AggregateId, AggregateType, AggregateVersion, CreatedAt, EventId};
+use crate::events::EventPayload;
+use crate::value_objects::{AggregateId, AggregateVersion, CreatedAt, EventId};
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub struct Event<A: AggregateId, P: EventPayload> {
     id: EventId,
-    aggregate_type: AggregateType,
     aggregate_id: A,
     aggregate_version: AggregateVersion,
     payload: P,
@@ -14,15 +13,9 @@ pub struct Event<A: AggregateId, P: EventPayload> {
 }
 
 impl<A: AggregateId, P: EventPayload> Event<A, P> {
-    pub fn new(
-        aggregate_type: AggregateType,
-        aggregate_id: A,
-        aggregate_version: AggregateVersion,
-        payload: P,
-    ) -> Self {
+    pub fn new(aggregate_id: A, aggregate_version: AggregateVersion, payload: P) -> Self {
         Self {
             id: EventId::new(),
-            aggregate_type,
             aggregate_id,
             aggregate_version,
             payload,
@@ -32,10 +25,6 @@ impl<A: AggregateId, P: EventPayload> Event<A, P> {
 
     pub fn id(&self) -> EventId {
         self.id
-    }
-
-    pub fn aggregate_type(&self) -> AggregateType {
-        self.aggregate_type
     }
 
     pub fn aggregate_id(&self) -> A {
