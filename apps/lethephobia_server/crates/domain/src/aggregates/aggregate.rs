@@ -10,7 +10,7 @@ pub trait Aggregate: Clone + Debug + Send + Sync + 'static {
     type Id: AggregateId;
     type State: AggregateState<Id = Self::Id>;
     type EventPayload: EventPayload;
-    type Error: From<AggregateError>;
+    type Error: From<AggregateError<Self::Id>>;
 
     fn state(&self) -> &Option<Self::State>;
     fn state_mut(&mut self) -> &mut Option<Self::State>;
@@ -50,6 +50,13 @@ pub trait Aggregate: Clone + Debug + Send + Sync + 'static {
         &self,
         event: &Event<Self::Id, Self::EventPayload>,
     ) -> Result<(), Self::Error> {
+        if let Some(state) = self.state() {
+            if state.id() != event.aggregate_id() {
+                return Err(
+                    AggregateError::InvalidAggregateId(state.id(), event.aggregate_id()).into(),
+                );
+            }
+        }
         let next_version = self.version().try_next().map_err(AggregateError::Version)?;
         if event.aggregate_version() != next_version {
             return Err(AggregateError::InvalidNextEventVersion(

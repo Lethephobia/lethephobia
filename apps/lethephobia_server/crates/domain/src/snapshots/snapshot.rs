@@ -25,12 +25,12 @@ impl<A: AggregateId, S: AggregateState<Id = A>> Snapshot<A, S> {
         self.id
     }
 
-    pub fn aggregate_version(&self) -> AggregateVersion {
-        self.aggregate_version
-    }
-
     pub fn aggregate_id(&self) -> A {
         self.aggregate_id
+    }
+
+    pub fn aggregate_version(&self) -> AggregateVersion {
+        self.aggregate_version
     }
 
     pub fn state(&self) -> &S {

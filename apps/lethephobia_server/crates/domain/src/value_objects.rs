@@ -8,7 +8,6 @@ pub mod value_object;
 
 pub use aggregate_id::AggregateId;
 pub use blog::blog_id::BlogId;
-pub use core::aggregate_type::AggregateType;
 pub use core::aggregate_version::AggregateVersion;
 pub use core::created_at::CreatedAt;
 pub use core::event_id::EventId;

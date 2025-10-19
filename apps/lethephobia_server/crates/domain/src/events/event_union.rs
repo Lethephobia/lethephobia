@@ -1,5 +1,4 @@
 use crate::events::{BlogEvent, UserEvent};
-use crate::value_objects::AggregateType;
 
 #[derive(Clone, Debug, Eq, PartialEq, Hash)]
 pub enum EventUnion {
@@ -8,10 +7,10 @@ pub enum EventUnion {
 }
 
 impl EventUnion {
-    pub fn aggregate_type(&self) -> AggregateType {
+    pub fn aggregate_type(&self) -> &'static str {
         match self {
-            Self::User(_) => AggregateType::User,
-            Self::Blog(_) => AggregateType::Blog,
+            Self::User(_) => "user",
+            Self::Blog(_) => "blog",
         }
     }
 }
