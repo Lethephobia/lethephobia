@@ -14,3 +14,15 @@ impl EventUnion {
         }
     }
 }
+
+impl From<UserEvent> for EventUnion {
+    fn from(event: UserEvent) -> Self {
+        Self::User(event)
+    }
+}
+
+impl From<BlogEvent> for EventUnion {
+    fn from(event: BlogEvent) -> Self {
+        Self::Blog(event)
+    }
+}

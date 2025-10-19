@@ -5,8 +5,6 @@ pub enum BlogEventPayload {}
 
 impl EventPayload for BlogEventPayload {
     fn event_type(&self) -> &'static str {
-        match self {
-            _ => panic!("unimplemented"),
-        }
+        panic!("unimplemented");
     }
 }
