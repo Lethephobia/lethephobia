@@ -3,8 +3,8 @@ use std::{fmt, fmt::Display};
 use uuid::Uuid;
 
 use crate::errors::EventIdError;
+use crate::value_objects::Id;
 use crate::value_objects::ValueObject;
-use crate::value_objects::core::id::Id;
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
 pub struct EventId(Id);

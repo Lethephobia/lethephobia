@@ -1,13 +1,18 @@
 pub mod aggregate_id;
+pub mod blog;
 pub mod core;
 pub mod entity_id;
+pub mod id;
+pub mod user;
 pub mod value_object;
 
 pub use aggregate_id::AggregateId;
-pub use core::aggregate_type::AggregateType;
+pub use blog::blog_id::BlogId;
 pub use core::aggregate_version::AggregateVersion;
 pub use core::created_at::CreatedAt;
 pub use core::event_id::EventId;
 pub use core::snapshot_id::SnapshotId;
 pub use entity_id::EntityId;
+pub use id::Id;
+pub use user::user_id::UserId;
 pub use value_object::ValueObject;
