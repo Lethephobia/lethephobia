@@ -6,5 +6,6 @@ edition = "2024"
 [dependencies]
 chrono = "0.4.42"
 foundation = { path = "../foundation" }
+mockall = "0.13.1"
 thiserror = "2.0.17"
 uuid = { version = "1.18.1", features = ["v7"] }

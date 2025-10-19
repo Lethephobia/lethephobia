@@ -4,11 +4,9 @@ use crate::aggregates::AggregateState;
 use crate::errors::AggregateError;
 use crate::events::{Event, EventPayload};
 use crate::snapshots::Snapshot;
-use crate::value_objects::{AggregateId, AggregateType, AggregateVersion};
+use crate::value_objects::{AggregateId, AggregateVersion};
 
-pub trait Aggregate: Clone + Debug + Eq + Send + Sync + 'static {
-    const TYPE: AggregateType;
-
+pub trait Aggregate: Clone + Debug + Send + Sync + 'static {
     type Id: AggregateId;
     type State: AggregateState<Id = Self::Id>;
     type EventPayload: EventPayload;
@@ -44,12 +42,7 @@ pub trait Aggregate: Clone + Debug + Eq + Send + Sync + 'static {
             .as_ref()
             .map(|state| state.id())
             .ok_or(AggregateError::NoState)?;
-        self.record_uncommitted_event(Event::new(
-            Self::TYPE,
-            aggregate_id,
-            self.version(),
-            payload,
-        ));
+        self.record_uncommitted_event(Event::new(aggregate_id, self.version(), payload));
         Ok(())
     }
 
@@ -106,7 +99,10 @@ pub trait Aggregate: Clone + Debug + Eq + Send + Sync + 'static {
     fn to_snapshot(&self) -> Result<Snapshot<Self::Id, Self::State>, Self::Error> {
         self.state()
             .as_ref()
-            .map(|state| Snapshot::new(Self::TYPE, state.id(), self.version(), state.clone()))
+            .map(|state| Snapshot::new(state.id(), self.version(), state.clone()))
             .ok_or(AggregateError::NoState.into())
     }
 }
+
+#[cfg(test)]
+mod tests {}
