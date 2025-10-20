@@ -120,7 +120,7 @@ mod tests {
     use thiserror::Error;
 
     use crate::errors::AggregateError;
-    use crate::value_objects::{AggregateVersion, Id, ValueObject};
+    use crate::value_objects::{AggregateId, AggregateVersion, EntityId, Id, ValueObject};
 
     #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
     struct CounterAggregateId(Id);
@@ -133,13 +133,13 @@ mod tests {
 
     impl ValueObject for CounterAggregateId {}
 
-    impl crate::value_objects::EntityId for CounterAggregateId {
+    impl EntityId for CounterAggregateId {
         fn value(self) -> Id {
             self.0
         }
     }
 
-    impl crate::value_objects::AggregateId for CounterAggregateId {}
+    impl AggregateId for CounterAggregateId {}
 
     impl Display for CounterAggregateId {
         fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
