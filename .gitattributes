@@ -2,7 +2,6 @@
 * text=auto eol=lf
 
 # Force LF for specific file types
-# (Removed: *.py)
 *.js text eol=lf
 *.jsx text eol=lf
 *.ts text eol=lf
@@ -49,15 +48,12 @@ Dockerfile text eol=lf
 *.rmeta binary
 *.dill binary
 
-# (Removed Python-specific binaries: *.pyc, *.pyo, *.pyd, *.so, *.egg, *.whl)
-
 # Database files
 *.db binary
 *.sqlite binary
 *.sqlite3 binary
 
 # Lock files should maintain their line endings
-# (Removed Python locks: poetry.lock, Pipfile.lock)
 package-lock.json text eol=lf
 yarn.lock text eol=lf
 pnpm-lock.yaml text eol=lf

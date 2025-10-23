@@ -9,6 +9,7 @@ environment:
 resolution: workspace
 
 dependencies:
+  appletheia: ^0.0.1
   flutter:
     sdk: flutter
   foundation: any
