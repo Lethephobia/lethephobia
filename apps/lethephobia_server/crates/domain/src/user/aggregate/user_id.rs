@@ -4,7 +4,6 @@ use uuid::Uuid;
 
 use appletheia::aggregate::{AggregateId, EntityId};
 use appletheia::identifier::Id;
-use appletheia::value_object::ValueObject;
 
 use super::UserIdError;
 
@@ -22,8 +21,6 @@ impl Default for UserId {
         Self::new()
     }
 }
-
-impl ValueObject for UserId {}
 
 impl EntityId for UserId {
     fn value(self) -> Id {

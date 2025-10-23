@@ -2,7 +2,6 @@ use std::{fmt, fmt::Display};
 
 use appletheia::aggregate::{AggregateId, EntityId};
 use appletheia::identifier::Id;
-use appletheia::value_object::ValueObject;
 use uuid::Uuid;
 
 use super::BlogIdError;
@@ -21,8 +20,6 @@ impl Default for BlogId {
         Self::new()
     }
 }
-
-impl ValueObject for BlogId {}
 
 impl EntityId for BlogId {
     fn value(self) -> Id {
