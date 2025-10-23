@@ -4,11 +4,11 @@ on:
   push:
     branches: [ "main", "develop" ]
     paths:
-      - "apps/lethephobia_server"
+      - "apps/lethephobia_server/**"
   pull_request:
     branches: [ "main", "develop" ]
     paths:
-      - "apps/lethephobia_server"
+      - "apps/lethephobia_server/**"
 
 env:
   CARGO_TERM_COLOR: always
@@ -17,6 +17,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/lethephobia_server
 
     steps:
     - uses: actions/checkout@v4
