@@ -30,7 +30,7 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^6.0.0
   build_runner: any
-  go_router_builder: 4.1.0
+  go_router_builder: 4.1.1
   build_verify: any
   custom_lint: any
   json_serializable: ^6.11.1
