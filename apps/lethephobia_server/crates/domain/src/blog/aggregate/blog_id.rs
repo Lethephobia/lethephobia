@@ -1,6 +1,6 @@
 use std::{fmt, fmt::Display};
 
-use appletheia::aggregate::{AggregateId, EntityId};
+use appletheia::aggregate::AggregateId;
 use appletheia::identifier::Id;
 use uuid::Uuid;
 
@@ -21,13 +21,11 @@ impl Default for BlogId {
     }
 }
 
-impl EntityId for BlogId {
+impl AggregateId for BlogId {
     fn value(self) -> Id {
         self.0
     }
 }
-
-impl AggregateId for BlogId {}
 
 impl TryFrom<Uuid> for BlogId {
     type Error = BlogIdError;
@@ -58,7 +56,6 @@ impl Display for BlogId {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use appletheia::aggregate::EntityId;
     use appletheia::identifier::IdError;
     use uuid::{Uuid, Version};
 
