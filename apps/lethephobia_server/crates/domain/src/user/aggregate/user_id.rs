@@ -1,18 +1,19 @@
 use std::{fmt, fmt::Display};
 
-use uuid::Uuid;
+use serde::{Deserialize, Serialize};
+use uuid::{Uuid, Version};
 
 use appletheia::aggregate::AggregateId;
-use appletheia::identifier::Id;
 
 use super::UserIdError;
 
-#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd)]
-pub struct UserId(Id);
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash, Ord, PartialOrd, Deserialize, Serialize)]
+#[serde(try_from = "Uuid", into = "Uuid")]
+pub struct UserId(Uuid);
 
 impl UserId {
     pub fn new() -> Self {
-        Self(Id::new())
+        Self(Uuid::now_v7())
     }
 }
 
@@ -23,8 +24,17 @@ impl Default for UserId {
 }
 
 impl AggregateId for UserId {
-    fn value(self) -> Id {
+    type Error = UserIdError;
+
+    fn value(self) -> Uuid {
         self.0
+    }
+
+    fn try_from_uuid(value: Uuid) -> Result<Self, Self::Error> {
+        match value.get_version() {
+            Some(Version::SortRand) => Ok(Self(value)),
+            _ => Err(UserIdError::NotUuidV7(value)),
+        }
     }
 }
 
@@ -32,32 +42,25 @@ impl TryFrom<Uuid> for UserId {
     type Error = UserIdError;
 
     fn try_from(value: Uuid) -> Result<Self, Self::Error> {
-        Ok(Self(Id::try_from(value)?))
+        Self::try_from_uuid(value)
     }
 }
 
 impl From<UserId> for Uuid {
     fn from(value: UserId) -> Self {
-        value.0.value()
-    }
-}
-
-impl From<Id> for UserId {
-    fn from(value: Id) -> Self {
-        Self(value)
+        value.0
     }
 }
 
 impl Display for UserId {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "{}", self.0)
+        write!(f, "{}", self.value())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use appletheia::identifier::IdError;
     use uuid::{Uuid, Version};
 
     #[test]
@@ -87,24 +90,8 @@ mod tests {
         let uuid = Uuid::nil();
 
         match UserId::try_from(uuid) {
-            Err(UserIdError::Id(IdError::NotUuidV7(returned))) => assert_eq!(returned, uuid),
-            other => panic!("expected NotUuidV7 error via UserIdError::Id, got {other:?}"),
+            Err(UserIdError::NotUuidV7(returned)) => assert_eq!(returned, uuid),
+            other => panic!("expected NotUuidV7 error, got {other:?}"),
         }
-    }
-
-    #[test]
-    fn from_id_preserves_value() {
-        let id = Id::new();
-        let user_id = UserId::from(id);
-
-        assert_eq!(user_id.value(), id);
-    }
-
-    #[test]
-    fn display_formats_underlying_uuid() {
-        let uuid = Uuid::now_v7();
-        let user_id = UserId::try_from(uuid).expect("uuidv7 should be accepted");
-
-        assert_eq!(user_id.to_string(), uuid.to_string());
     }
 }

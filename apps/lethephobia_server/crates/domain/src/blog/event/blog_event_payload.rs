@@ -1,10 +1,12 @@
 use appletheia::event::EventPayload;
+use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Debug, Eq, PartialEq, Hash)]
+use super::BlogEventPayloadError;
+
+#[derive(Clone, Debug, Eq, PartialEq, Hash, Deserialize, Serialize)]
+#[serde(tag = "type", content = "data", rename_all = "snake_case")]
 pub enum BlogEventPayload {}
 
 impl EventPayload for BlogEventPayload {
-    fn event_type(&self) -> &'static str {
-        panic!("unimplemented");
-    }
+    type Error = BlogEventPayloadError;
 }
