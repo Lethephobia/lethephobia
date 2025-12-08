@@ -19,9 +19,9 @@
     "format": "biome format --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "2.3.1",
-    "@types/node": "^24.9.1",
-    "tsup": "^8.5.0",
+    "@biomejs/biome": "2.3.8",
+    "@types/node": "^24.10.1",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3"
   },
   "dependencies": {
