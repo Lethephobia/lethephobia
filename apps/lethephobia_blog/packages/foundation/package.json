@@ -20,8 +20,8 @@
   },
   "devDependencies": {
     "@types/node": "^24.9.1",
-    "tsup": "^8.5.0",
+    "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "@biomejs/biome": "2.3.1"
+    "@biomejs/biome": "2.3.8"
   }
 }
