@@ -1,4 +1,4 @@
-FROM rust:1.90-slim AS base
+FROM rust:1.93-slim AS base
 
 FROM base AS dev
 
